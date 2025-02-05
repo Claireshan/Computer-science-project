@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
     <title>Access Point Prediction</title>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <style>
@@ -131,9 +134,10 @@
     <!-- Main Content -->
     <form action="/bw_predict" method="POST">
         <label for="ap_name">Select Access Point:</label>
-        <select name="ap_name" id="ap_name" required>
+        <select name="ap_name" id="ap_name" class="searchable-dropdown" required>
+            <option value="" disabled selected>Select AP</option>
             {% for name in ap_names %}
-            <option value="{{ name }}">{{ name }}</option>
+                <option value="{{ name }}">{{ name }}</option>
             {% endfor %}
         </select>
 
@@ -162,6 +166,13 @@
             {{ plot_html|safe }}
         </div>
     </div>
-    
+    <script>
+        $(document).ready(function() {
+            $('.searchable-dropdown').select2({
+                placeholder: "Search for an Access Point",
+                allowClear: true
+            });
+        });
+    </script>
 </body>
 </html>

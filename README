@@ -1,0 +1,27 @@
+This is a flask app with built in html templates
+its also has sample access point models
+
+To have it running locally, follow the instructions below:
+1. install and activate a virtual enviroment
+For Ubuntu/linux excute
+    sudo apt update
+    sudo apt install python3-virtualenv
+    virtualenv venv
+    source venv/bin/activate
+
+For Windows
+    ensure you have python3 installed, if you do not then install it
+    python3 --version
+    pip install virtualenv
+    virtualenv -p python3 venv
+    venv\Scripts\activate
+
+2. After activating the virtualenv, install all requirements
+    pip install -r requirments
+
+3. Run the app
+   pythom app.py
+
+This will give u an IP and port to access that UI, probably http://127.0.0.1:5000
+
+

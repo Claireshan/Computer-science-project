@@ -151,6 +151,7 @@ def predict():
 
 @app.route('/bw_predict', methods=['POST'])
 def bwPredict():
+    
     try:
         ap_name = request.form['ap_name']
         start_date = pd.to_datetime(request.form['start_date'])
@@ -170,10 +171,18 @@ def bwPredict():
         # Generate the date range for prediction
         date_range = pd.date_range(start=start_date, end=end_date, freq='D')
 
-        # Predict values for the date range
-        num_days = len(date_range)
-        predictions = selected_model.predict([[num_days]])
-        #predictions = selected_model.forecast(steps=num_days)
+        # Extract required features
+        feature_df = pd.DataFrame({
+            'hour': [12] * len(date_range),  # Assuming prediction at 12 PM
+            'day_of_week': date_range.dayofweek,
+            'month': date_range.month
+        })
+
+        # Ensure feature order matches what the model expects
+        feature_df = feature_df[['hour', 'day_of_week', 'month']]
+
+        # Predict values using the model
+        predictions = selected_model.predict(feature_df)
 
         # Generate a Plotly graph of predictions
         fig = go.Figure()
@@ -197,7 +206,7 @@ def bwPredict():
             ap_names=ap_names,
             plot_html=plot_html,
             bwmodel_names=list(rf_models.keys()),
-            prediction_summary=f"Predictions generated for {num_days} days."
+            prediction_summary=f"Predictions generated for {len(date_range)} days."
         )
 
     except Exception as e:
