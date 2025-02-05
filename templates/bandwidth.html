@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+    <title>Access Point Prediction</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-color: #f9f9f9;
+        }
+
+        /* Navigation bar styles */
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #0a0a3f;
+            color: white;
+            padding: 10px 20px;
+        }
+        .navbar .logo {
+            display: flex;
+            align-items: center;
+        }
+        .navbar .logo img {
+            height: 40px;
+            margin-right: 10px;
+        }
+        .navbar .title {
+            font-size: 1.5rem;
+        }
+        .navbar .menu {
+            display: flex;
+            gap: 15px;
+        }
+        .navbar .menu a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        /* Form styles */
+        form {
+            margin: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        form label {
+            flex: 1 0 150px;
+            text-align: right;
+            padding-right: 10px;
+            font-weight: bold;
+        }
+        form select, form input, form button {
+            flex: 2 0 200px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        form button {
+            background-color: #0a0a3f;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        form button:hover {
+            background-color: #1a1a6f;
+        }
+
+        /* Prediction results and graph */
+        .results {
+            margin: 20px auto;
+            padding: 20px;
+            max-width: 800px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .results h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .navbar .menu {
+                flex-direction: column;
+                gap: 10px;
+            }
+            form {
+                flex-direction: column;
+            }
+            form label {
+                text-align: left;
+                padding: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <div class="logo">
+            <a href="/"><img src="" alt="Logo"></a>
+            <span class="title">Bandwidth and User Predictions</span>
+        </div>
+        <div class="menu">
+            <a href="/">Users</a>
+            <a href="/bandwidth">Bandwidth</a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <form action="/bw_predict" method="POST">
+        <label for="ap_name">Select Access Point:</label>
+        <select name="ap_name" id="ap_name" class="searchable-dropdown" required>
+            <option value="" disabled selected>Select AP</option>
+            {% for name in ap_names %}
+                <option value="{{ name }}">{{ name }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="start_date">Start Date:</label>
+        <input type="date" name="start_date" id="start_date" required>
+
+        <label for="end_date">End Date:</label>
+        <input type="date" name="end_date" id="end_date" required>
+
+        <label for="model_name">Select Model:</label>
+        <select id="bwmodel_name" name="bwmodel_name" required>
+	     {% for name in bwmodel_name %}
+	     <option value="{{ name }}">{{ name }}</option>
+	     {% endfor %}
+        </select>
+
+        <button type="submit">Predict</button>
+    </form>
+
+    <!-- Prediction Results -->
+    <div class="results">
+        {% if prediction_summary %}
+        <h2>{{ prediction_summary }}</h2>
+        {% endif %}
+        <div id="graph">
+            {{ plot_html|safe }}
+        </div>
+    </div>
+    <script>
+        $(document).ready(function() {
+            $('.searchable-dropdown').select2({
+                placeholder: "Search for an Access Point",
+                allowClear: true
+            });
+        });
+    </script>
+</body>
+</html>
